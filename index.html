@@ -1256,15 +1256,30 @@ if (music) {
     music.pause();
     music.currentTime = 0;
 }
+    
+music = new Audio(
+    new URL(
+        levels[index].music,
+        document.baseURI
+    ).href
+);
 
-// Load this level's music
-music = new Audio(levels[index].music);
 music.loop = true;
 music.volume = 0.7;
 
-// Start music
+music.addEventListener("error", () => {
+    console.error(
+        "Could not load music:",
+        levels[index].music,
+        music.error
+    );
+});
+
 music.play().catch(error => {
-    console.log("Music needs user interaction:", error);
+    console.log(
+        "Music could not start:",
+        error
+    );
 });
 
     score = 0;
@@ -1910,12 +1925,6 @@ function failLevel(){
         "flex";
 
 }
-
-    if (music) {
-    music.pause();
-    music.currentTime = 0;
-}
-
 
 /* =====================================================
    LEVEL SELECT BUTTON
