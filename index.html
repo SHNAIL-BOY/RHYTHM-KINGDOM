@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Rhythm Kingdom</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    user-select:none;
+}
+
+html,body{
+    margin:0;
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#120d09;
+    color:#f1d99d;
+    font-family:Georgia,serif;
+}
+
+#game{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    background:#302216;
+}
+
+/* SKY */
+
+.sky{
+    position:absolute;
+    inset:0 0 45% 0;
+    background:
+        radial-gradient(
+            circle at 75% 22%,
+            #d6b66b 0 3%,
+            rgba(214,182,107,.25) 4%,
+            transparent 10%
+        ),
+        linear-gradient(
+            #18283a,
+            #35495a 55%,
+            #9a7547
+        );
+}
+
+.moon{
+    position:absolute;
+    width:65px;
+    height:65px;
+    right:16%;
+    top:11%;
+    background:#e5d29a;
+    border-radius:50%;
+    box-shadow:0 0 25px rgba(229,210,154,.4);
+}
+
+.moon:after{
+    content:"";
+    position:absolute;
+    width:65px;
+    height:65px;
+    left:18px;
+    top:-8px;
+    background:#263746;
+    border-radius:50%;
+}
+
+.star{
+    position:absolute;
+    width:4px;
+    height:4px;
+    background:#eadcae;
+    box-shadow:0 0 5px #eadcae;
+}
+
+.s1{left:12%;top:12%}
+.s2{left:25%;top:20%}
+.s3{left:38%;top:8%}
+.s4{left:55%;top:18%}
+.s5{left:67%;top:7%}
+.s6{left:83%;top:30%}
+.s7{left:91%;top:12%}
+
+/* CASTLE */
+
+.castle{
+    position:absolute;
+    left:50%;
+    bottom:22%;
+    transform:translateX(-50%);
+    width:min(900px,90vw);
+    height:50vh;
+}
+
+.castle-wall{
+    position:absolute;
+    left:14%;
+    right:14%;
+    bottom:0;
+    height:70%;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #66513a 0px,
+            #66513a 29px,
+            #453628 30px,
+            #453628 34px
+        );
+    border:6px solid #2a2018;
+    box-shadow:
+        inset 0 0 0 5px #887052,
+        0 15px 20px #000;
+}
+
+.castle-wall:before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 65px,
+            rgba(31,23,17,.5) 66px 70px
+        );
+    opacity:.55;
+}
+
+.tower{
+    position:absolute;
+    bottom:0;
+    width:20%;
+    height:100%;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #6b563e 0px,
+            #6b563e 30px,
+            #46372a 31px,
+            #46372a 35px
+        );
+    border:7px solid #292019;
+    box-shadow:
+        inset 0 0 0 4px #8b7251,
+        0 15px 20px #000;
+}
+
+.tower.left{
+    left:2%;
+}
+
+.tower.right{
+    right:2%;
+}
+
+.roof{
+    position:absolute;
+    left:-18%;
+    right:-18%;
+    top:-18%;
+    height:25%;
+    background:#29201a;
+    clip-path:
+        polygon(
+            50% 0,
+            100% 100%,
+            0 100%
+        );
+    border-bottom:8px solid #17120e;
+}
+
+.battlements{
+    position:absolute;
+    top:-8%;
+    left:-5%;
+    right:-5%;
+    height:12%;
+    background:
+        linear-gradient(
+            90deg,
+            #2a2018 0 14%,
+            transparent 14% 20%,
+            #2a2018 20% 34%,
+            transparent 34% 40%,
+            #2a2018 40% 54%,
+            transparent 54% 60%,
+            #2a2018 60% 74%,
+            transparent 74% 80%,
+            #2a2018 80% 94%,
+            transparent 94%
+        );
+}
+
+.window{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    width:30px;
+    height:58px;
+    background:#15100c;
+    border:5px solid #302319;
+    border-radius:18px 18px 5px 5px;
+    box-shadow:0 0 20px #e6a63e;
+}
+
+.window.w1{top:25%}
+.window.w2{top:58%}
+
+.gate{
+    position:absolute;
+    left:50%;
+    bottom:0;
+    transform:translateX(-50%);
+    width:150px;
+    height:190px;
+    background:#1a120c;
+    border:9px solid #2b2118;
+    border-bottom:0;
+    border-radius:75px 75px 0 0;
+    box-shadow:inset 0 0 25px #000;
+}
+
+.gate-bars{
+    position:absolute;
+    inset:10px;
+    background:
+        repeating-linear-gradient(
+            90deg,
+            transparent 0 22px,
+            #3f2e20 23px 29px
+        );
+}
+
+.flag{
+    position:absolute;
+    top:-16%;
+    width:75px;
+    height:90px;
+    background:#761f1d;
+    clip-path:
+        polygon(
+            0 0,
+            100% 15%,
+            70% 50%,
+            100% 85%,
+            0 100%
+        );
+    border-left:7px solid #2b2118;
+    animation:flagWave 1.5s ease-in-out infinite alternate;
+}
+
+.flag.left{
+    left:50%;
+}
+
+.flag.right{
+    right:50%;
+}
+
+@keyframes flagWave{
+    from{transform:skewY(0deg)}
+    to{transform:skewY(4deg)}
+}
+
+/* GROUND */
+
+.ground{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:0;
+    height:25%;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #35271b 0 18px,
+            #241b14 19px 23px
+        );
+    border-top:8px solid #17110c;
+}
+
+.path{
+    position:absolute;
+    left:50%;
+    transform:translateX(-50%);
+    bottom:0;
+    width:45%;
+    height:100%;
+    background:
+        repeating-linear-gradient(
+            0deg,
+            #80633e 0 27px,
+            #634b30 28px 32px
+        );
+    clip-path:
+        polygon(
+            25% 0,
+            75% 0,
+            100% 100%,
+            0 100%
+        );
+}
+
+/* TORCHES */
+
+.torch{
+    position:absolute;
+    width:18px;
+    height:65px;
+    background:#3b2616;
+    border:4px solid #1c120b;
+    z-index:5;
+}
+
+.torch.left{
+    left:17%;
+    bottom:42%;
+}
+
+.torch.right{
+    right:17%;
+    bottom:42%;
+}
+
+.flame{
+    position:absolute;
+    left:50%;
+    top:-38px;
+    transform:translateX(-50%);
+    width:30px;
+    height:42px;
+    background:#f08b24;
+    clip-path:
+        polygon(
+            50% 0,
+            75% 35%,
+            100% 60%,
+            75% 100%,
+            25% 100%,
+            0 60%,
+            30% 35%
+        );
+    filter:drop-shadow(0 0 12px #ff9e2e);
+    animation:flame .12s infinite alternate;
+}
+
+.flame:after{
+    content:"";
+    position:absolute;
+    left:8px;
+    top:12px;
+    width:14px;
+    height:23px;
+    background:#ffe6a0;
+    clip-path:
+        polygon(
+            50% 0,
+            100% 55%,
+            75% 100%,
+            25% 100%,
+            0 55%
+        );
+}
+
+@keyframes flame{
+    from{
+        transform:translateX(-50%) scale(1);
+    }
+    to{
+        transform:translateX(-50%) scale(1.1,.9);
+    }
+}
+
+/* LEVEL SELECT */
+
+#levelSelect{
+    position:absolute;
+    inset:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+        radial-gradient(
+            circle,
+            rgba(98,71,36,.97),
+            rgba(24,16,9,.99) 75%
+        );
+    overflow:auto;
+    padding:20px;
+}
+
+.levelPanel{
+    width:min(750px,94vw);
+    padding:30px;
+    background:
+        linear-gradient(
+            #3b2918,
+            #20140b
+        );
+    border:6px double #b3833e;
+    box-shadow:0 0 50px #000;
+    text-align:center;
+}
+
+.levelPanel h1{
+    margin:0 0 5px;
+    font-size:42px;
+    color:#e6bd73;
+    text-shadow:4px 4px #120c07;
+}
+
+.subtitle{
+    margin-top:0;
+    color:#c9aa70;
+}
+
+.levels{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+    margin-top:25px;
+}
+
+.level{
+    position:relative;
+    min-height:125px;
+    padding:17px;
+    text-align:left;
+    color:#f1d99d;
+    background:
+        linear-gradient(
+            #49331d,
+            #2b1d11
+        );
+    border:3px solid #8d6535;
+    cursor:pointer;
+    transition:
+        transform .15s,
+        border-color .15s,
+        background .15s;
+}
+
+.level:hover:not(.locked){
+    transform:translateY(-3px);
+    border-color:#e0b968;
+    background:
+        linear-gradient(
+            #5b4023,
+            #352313
+        );
+}
+
+.level.locked{
+    opacity:.45;
+    cursor:not-allowed;
+}
+
+.levelNumber{
+    font-size:13px;
+    color:#b9975d;
+}
+
+.levelName{
+    margin-top:3px;
+    font-size:23px;
+    font-weight:bold;
+    color:#ebca83;
+}
+
+.stars{
+    margin-top:7px;
+    color:#d9b35d;
+    letter-spacing:3px;
+}
+
+.levelDescription{
+    margin-top:6px;
+    font-size:13px;
+    color:#bca47a;
+}
+
+.lock{
+    position:absolute;
+    right:14px;
+    top:14px;
+    font-size:25px;
+}
+
+#resetProgress{
+    margin-top:20px;
+    background:#3b2817;
+    border:2px solid #75542d;
+    color:#bda16f;
+    padding:8px 15px;
+    font-size:13px;
+}
+
+/* GAME HEADER */
+
+#top{
+    position:absolute;
+    left:0;
+    right:0;
+    top:0;
+    height:95px;
+    z-index:30;
+    background:
+        linear-gradient(
+            #21170f,
+            #3a2818
+        );
+    border-bottom:5px solid #a4773c;
+    box-shadow:0 5px 15px #000;
+}
+
+h1{
+    margin:8px 0 2px;
+    text-align:center;
+    font-size:29px;
+    letter-spacing:4px;
+    color:#e7c77e;
+    text-shadow:3px 3px #130d08;
+}
+
+#levelTitle{
+    text-align:center;
+    font-size:13px;
+    color:#c9a766;
+}
+
+#stats{
+    display:flex;
+    justify-content:space-between;
+    width:min(750px,90vw);
+    margin:auto;
+    font-size:16px;
+}
+
+#healthOuter{
+    display:inline-block;
+    width:140px;
+    height:15px;
+    border:2px solid #c49a55;
+    background:#120c08;
+    vertical-align:middle;
+}
+
+#health{
+    display:block;
+    width:100%;
+    height:100%;
+    background:#8f2920;
+    transition:width .2s;
+}
+
+/* RHYTHM BOARD */
+
+#board{
+    position:absolute;
+    top:95px;
+    bottom:0;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(680px,82vw);
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    z-index:20;
+    background:rgba(17,11,7,.78);
+    border-left:5px solid #9a6b36;
+    border-right:5px solid #9a6b36;
+    box-shadow:0 0 35px #000;
+}
+
+.lane{
+    position:relative;
+    border-right:2px solid rgba(200,155,80,.3);
+}
+
+.lane:last-child{
+    border:0;
+}
+
+.hit{
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:105px;
+    height:70px;
+    border-top:4px solid #e1bd70;
+    border-bottom:4px solid #e1bd70;
+    background:rgba(218,169,79,.12);
+    z-index:5;
+    pointer-events:none;
+}
+
+.note{
+    position:absolute;
+    left:12%;
+    width:76%;
+    height:55px;
+    transform:translateY(-50%);
+    border:3px solid #e0bc6b;
+    border-radius:8px;
+    background:
+        linear-gradient(
+            135deg,
+            #70431f,
+            #b27732,
+            #593217
+        );
+    box-shadow:
+        0 0 10px #000,
+        inset 0 0 8px #e2b765;
+}
+
+.key{
+    position:absolute;
+    bottom:18px;
+    left:50%;
+    transform:translateX(-50%);
+    width:52px;
+    height:38px;
+    border:3px solid #c89b54;
+    background:#2a1b10;
+    text-align:center;
+    line-height:32px;
+    font-size:20px;
+    font-weight:bold;
+    z-index:10;
+}
+
+.key.pressed{
+    background:#b77b31;
+    box-shadow:0 0 20px #e1ae50;
+}
+
+/* JUDGEMENT */
+
+#judgement{
+    position:absolute;
+    left:50%;
+    bottom:200px;
+    transform:translateX(-50%);
+    z-index:50;
+    font-size:34px;
+    font-weight:bold;
+    text-shadow:3px 3px #000;
+    opacity:0;
+    pointer-events:none;
+}
+
+#judgement.show{
+    animation:judge .55s ease-out;
+}
+
+@keyframes judge{
+    0%{
+        opacity:1;
+        transform:translate(-50%,20px) scale(.7);
+    }
+
+    40%{
+        opacity:1;
+        transform:translate(-50%,0) scale(1.1);
+    }
+
+    100%{
+        opacity:0;
+        transform:translate(-50%,-40px) scale(1);
+    }
+}
+
+/* GAME OVER */
+
+#gameOver{
+    position:absolute;
+    inset:0;
+    z-index:110;
+    display:none;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:rgba(10,6,3,.92);
+}
+
+.panel{
+    width:min(600px,90vw);
+    padding:38px;
+    background:
+        linear-gradient(
+            #3b2918,
+            #20140b
+        );
+    border:6px double #b3833e;
+    box-shadow:0 0 50px #000;
+}
+
+.panel h2{
+    margin:0 0 10px;
+    font-size:44px;
+    color:#e6bd73;
+    text-shadow:4px 4px #120c07;
+}
+
+.panel p{
+    font-size:18px;
+}
+
+button{
+    padding:14px 40px;
+    margin-top:15px;
+    font-family:Georgia,serif;
+    font-size:20px;
+    font-weight:bold;
+    color:#f5dfaa;
+    background:
+        linear-gradient(
+            #9b6b31,
+            #543516
+        );
+    border:4px ridge #c99a50;
+    cursor:pointer;
+}
+
+button:hover{
+    background:
+        linear-gradient(
+            #b27b39,
+            #68431c
+        );
+}
+
+.secondary{
+    margin-left:8px;
+    padding:8px 15px;
+    font-size:13px;
+    border:2px solid #75542d;
+    background:#3b2817;
+}
+
+/* MOBILE */
+
+@media(max-width:650px){
+
+    .levels{
+        grid-template-columns:1fr;
+    }
+
+    .levelPanel{
+        padding:18px;
+    }
+
+    .levelPanel h1{
+        font-size:31px;
+    }
+
+    #stats{
+        font-size:12px;
+    }
+
+    h1{
+        font-size:20px;
+    }
+
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div class="sky"></div>
+
+    <div class="moon"></div>
+
+    <div class="star s1"></div>
+    <div class="star s2"></div>
+    <div class="star s3"></div>
+    <div class="star s4"></div>
+    <div class="star s5"></div>
+    <div class="star s6"></div>
+    <div class="star s7"></div>
+
+    <div class="castle">
+
+        <div class="tower left">
+            <div class="roof"></div>
+            <div class="battlements"></div>
+            <div class="flag left"></div>
+            <div class="window w1"></div>
+            <div class="window w2"></div>
+        </div>
+
+        <div class="castle-wall">
+
+            <div class="gate">
+                <div class="gate-bars"></div>
+            </div>
+
+        </div>
+
+        <div class="tower right">
+            <div class="roof"></div>
+            <div class="battlements"></div>
+            <div class="flag right"></div>
+            <div class="window w1"></div>
+            <div class="window w2"></div>
+        </div>
+
+    </div>
+
+    <div class="torch left">
+        <div class="flame"></div>
+    </div>
+
+    <div class="torch right">
+        <div class="flame"></div>
+    </div>
+
+    <div class="ground">
+        <div class="path"></div>
+    </div>
+
+    <!-- LEVEL SELECT -->
+
+    <div id="levelSelect">
+
+        <div class="levelPanel">
+
+            <h1>⚔ RYTHM KINGDOM⚔</h1>
+
+            <p class="subtitle">
+                Choose your royal performance
+            </p>
+
+            <div id="levels" class="levels"></div>
+
+            <button id="resetProgress">
+                Reset Progress
+            </button>
+
+        </div>
+
+    </div>
+
+    <!-- GAME HEADER -->
+
+    <div id="top" style="display:none">
+
+        <h1>⚔ RYTHM KINGDOM⚔</h1>
+
+        <div id="levelTitle"></div>
+
+        <div id="stats">
+
+            <div>
+                Score:
+                <b id="score">0</b>
+            </div>
+
+            <div>
+                Combo:
+                <b id="combo">0</b>
+            </div>
+
+            <div>
+                Health:
+                <span id="healthOuter">
+                    <span id="health"></span>
+                </span>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- RHYTHM BOARD -->
+
+    <div id="board" style="display:none">
+
+        <div class="lane">
+            <div class="key">A</div>
+        </div>
+
+        <div class="lane">
+            <div class="key">S</div>
+        </div>
+
+        <div class="lane">
+            <div class="key">K</div>
+        </div>
+
+        <div class="lane">
+            <div class="key">L</div>
+        </div>
+
+        <div class="hit"></div>
+
+    </div>
+
+    <div id="judgement"></div>
+
+    <!-- GAME OVER -->
+
+    <div id="gameOver">
+
+        <div class="panel">
+
+            <h2 id="resultTitle">
+                Level Complete!
+            </h2>
+
+            <p>
+                Score:
+                <b id="finalScore">0</b>
+            </p>
+
+            <p>
+                Best Combo:
+                <b id="finalCombo">0</b>
+            </p>
+
+            <button id="nextLevelButton">
+                Continue
+            </button>
+
+            <button
+                id="levelSelectButton"
+                class="secondary">
+                Level Select
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* =====================================================
+   LEVEL DATA
+===================================================== */
+
+const levels = [
+
+    {
+        name:"The Castle Gates",
+        description:"Begin your journey at the royal gates.",
+        difficulty:1,
+        music:"music/castle-gates.mp3",
+
+        chart:[
+            0,1,2,3,
+            0,1,2,3,
+            0,2,1,3,
+            0,1,2,3,
+            0,0,1,1,
+            2,2,3,3,
+            0,1,2,3,
+            3,2,1,0
+        ]
+    },
+
+    {
+        name:"The King's Hall",
+        description:"Perform before the royal court.",
+        difficulty:2,
+        music:"music/kings-hall.mp3",
+
+        chart:[
+            0,1,0,2,
+            1,3,2,3,
+            0,2,1,3,
+            0,1,2,3,
+            0,0,2,2,
+            1,1,3,3,
+            0,2,3,1,
+            2,0,1,3,
+            3,2,1,0,
+            0,1,2,3
+        ]
+    },
+
+    {
+        name:"Moonlit Tavern",
+        description:"Dance to the rhythm of the tavern.",
+        difficulty:3,
+        music:"music/moonlit-tavern.mp3",
+
+        chart:[
+            0,1,2,1,
+            0,2,3,2,
+            1,3,0,2,
+            3,1,2,0,
+            0,0,1,2,
+            2,3,3,1,
+            0,2,1,3,
+            3,1,2,0,
+            0,1,3,2,
+            1,0,2,3,
+            3,2,1,0,
+            0,2,1,3
+        ]
+    },
+
+    {
+        name:"The Battlefield",
+        description:"Keep the rhythm while armies clash.",
+        difficulty:4,
+        music:"music/battlefield.mp3",
+
+        chart:[
+            0,0,2,2,
+            1,1,3,3,
+            0,2,1,3,
+            2,0,3,1,
+            0,1,2,3,
+            3,2,1,0,
+            0,2,0,3,
+            1,3,1,2,
+            0,1,3,2,
+            3,0,2,1,
+            0,2,1,3,
+            3,1,0,2,
+            0,1,2,3,
+            3,2,1,0
+        ]
+    },
+
+    {
+        name:"Dragon's Keep",
+        description:"Face the final rhythm challenge.",
+        difficulty:5,
+        music:"music/dragons-keep.mp3",
+
+        chart:[
+            0,2,1,3,
+            3,1,2,0,
+            0,1,3,2,
+            2,3,1,0,
+            0,2,0,3,
+            1,3,1,2,
+            3,2,1,0,
+            0,1,2,3,
+            0,3,1,2,
+            2,1,3,0,
+            0,2,3,1,
+            3,0,2,1,
+            0,1,2,3,
+            3,2,1,0,
+            0,2,1,3,
+            3,1,2,0
+        ]
+    }
+
+];
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+let unlocked =
+    Number(localStorage.getItem("kingdomRhythmUnlocked"));
+
+if (
+    !Number.isFinite(unlocked) ||
+    unlocked < 1
+) {
+    unlocked = 1;
+}
+
+unlocked = Math.min(
+    unlocked,
+    levels.length
+);
+
+
+/* =====================================================
+   DOM
+===================================================== */
+
+const levelsContainer =
+    document.getElementById("levels");
+
+const board =
+    document.getElementById("board");
+
+const lanes =
+    document.querySelectorAll(".lane");
+
+const scoreText =
+    document.getElementById("score");
+
+const comboText =
+    document.getElementById("combo");
+
+const healthBar =
+    document.getElementById("health");
+
+const judgement =
+    document.getElementById("judgement");
+
+const topBar =
+    document.getElementById("top");
+
+const levelSelect =
+    document.getElementById("levelSelect");
+
+const gameOver =
+    document.getElementById("gameOver");
+
+const levelTitle =
+    document.getElementById("levelTitle");
+
+
+/* =====================================================
+   GAME VARIABLES
+===================================================== */
+
+let currentLevel = 0;
+let score = 0;
+let combo = 0;
+let bestCombo = 0;
+let health = 100;
+let running = false;
+
+let notes = [];
+
+let beatTimer = null;
+let finishTimer = null;
+
+let chartPosition = 0;
+
+
+/* =====================================================
+   RHYTHM
+===================================================== */
+
+const BPM = 120;
+const BEAT = 60000 / BPM;
+
+
+/* =====================================================
+   LEVEL SELECT
+===================================================== */
+
+function renderLevels(){
+
+    levelsContainer.innerHTML = "";
+
+    levels.forEach((level,index)=>{
+
+        const levelNumber = index + 1;
+
+        const card =
+            document.createElement("div");
+
+        card.className = "level";
+
+        const locked =
+            levelNumber > unlocked;
+
+        if(locked){
+            card.classList.add("locked");
+        }
+
+        const stars =
+            "★".repeat(level.difficulty) +
+            "☆".repeat(5 - level.difficulty);
+
+        card.innerHTML = `
+
+            <div class="levelNumber">
+                LEVEL ${levelNumber}
+            </div>
+
+            <div class="levelName">
+                ${level.name}
+            </div>
+
+            <div class="stars">
+                ${stars}
+            </div>
+
+            <div class="levelDescription">
+                ${level.description}
+            </div>
+
+            ${
+                locked
+                ? `<div class="lock">🔒</div>`
+                : ""
+            }
+
+        `;
+
+        if(!locked){
+
+            card.addEventListener(
+                "click",
+                ()=>{
+                    startLevel(index);
+                }
+            );
+
+        }
+
+        levelsContainer.appendChild(card);
+
+    });
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+document
+.getElementById("resetProgress")
+.addEventListener("click",()=>{
+
+    unlocked = 1;
+
+    localStorage.setItem(
+        "kingdomRhythmUnlocked",
+        "1"
+    );
+
+    renderLevels();
+
+});
+
+
+/* =====================================================
+   START LEVEL
+===================================================== */
+
+function startLevel(index){
+
+    stopTimers();
+
+    currentLevel = index;
+
+    score = 0;
+    combo = 0;
+    bestCombo = 0;
+    health = 100;
+
+    chartPosition = 0;
+
+    notes = [];
+
+    document
+    .querySelectorAll(".note")
+    .forEach(n=>n.remove());
+
+    levelSelect.style.display = "none";
+
+    gameOver.style.display = "none";
+
+    topBar.style.display = "block";
+
+    board.style.display = "grid";
+
+    levelTitle.textContent =
+        levels[index].name;
+
+    updateStats();
+
+    running = true;
+
+    spawnChartNote();
+
+    beatTimer = setInterval(
+        spawnChartNote,
+        BEAT
+    );
+
+}
+
+
+/* =====================================================
+   STOP TIMERS
+===================================================== */
+
+function stopTimers(){
+
+    if(beatTimer !== null){
+
+        clearInterval(beatTimer);
+
+        beatTimer = null;
+
+    }
+
+    if(finishTimer !== null){
+
+        clearTimeout(finishTimer);
+
+        finishTimer = null;
+
+    }
+
+}
+
+
+/* =====================================================
+   SPAWN
+===================================================== */
+
+function spawnChartNote(){
+
+    if(!running){
+        return;
+    }
+
+    const level =
+        levels[currentLevel];
+
+    if(
+        chartPosition >=
+        level.chart.length
+    ){
+
+        if(beatTimer !== null){
+
+            clearInterval(beatTimer);
+
+            beatTimer = null;
+
+        }
+
+        finishTimer =
+            setTimeout(
+                checkLevelFinished,
+                5000
+            );
+
+        return;
+    }
+
+    const laneIndex =
+        level.chart[chartPosition];
+
+    chartPosition++;
+
+    const note =
+        document.createElement("div");
+
+    note.className = "note";
+
+    lanes[laneIndex].appendChild(note);
+
+    notes.push({
+
+        el:note,
+
+        lane:laneIndex,
+
+        y:-60,
+
+        hit:false
+
+    });
+
+}
+
+
+/* =====================================================
+   FINISH CHECK
+===================================================== */
+
+function checkLevelFinished(){
+
+    if(!running){
+        return;
+    }
+
+    if(notes.length === 0){
+
+        completeLevel();
+
+    }else{
+
+        finishTimer =
+            setTimeout(
+                checkLevelFinished,
+                300
+            );
+
+    }
+
+}
+
+
+/* =====================================================
+   GAME LOOP
+===================================================== */
+
+let last =
+    performance.now();
+
+function loop(now){
+
+    const dt =
+        now - last;
+
+    last = now;
+
+    if(running){
+
+        for(
+            let i=notes.length-1;
+            i>=0;
+            i--
+        ){
+
+            const n = notes[i];
+
+            n.y += dt * 0.34;
+
+            n.el.style.top =
+                n.y + "px";
+
+            if(
+                n.y >
+                board.clientHeight - 50
+            ){
+
+                if(!n.hit){
+
+                    miss(n);
+
+                }
+
+                if(n.el){
+
+                    n.el.remove();
+
+                }
+
+                notes.splice(i,1);
+
+            }
+
+        }
+
+    }
+
+    requestAnimationFrame(loop);
+
+}
+
+requestAnimationFrame(loop);
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+const keys = [
+    "a",
+    "s",
+    "k",
+    "l"
+];
+
+document.addEventListener(
+"keydown",
+event=>{
+
+    const key =
+        event.key.toLowerCase();
+
+    if(!keys.includes(key)){
+        return;
+    }
+
+    if(!running){
+        return;
+    }
+
+    const laneIndex =
+        keys.indexOf(key);
+
+    const keyElement =
+        lanes[laneIndex]
+        .querySelector(".key");
+
+    keyElement.classList.add("pressed");
+
+    setTimeout(()=>{
+
+        keyElement.classList.remove(
+            "pressed"
+        );
+
+    },100);
+
+    hitNote(laneIndex);
+
+});
+
+
+/* =====================================================
+   HIT NOTE
+===================================================== */
+
+function hitNote(laneIndex){
+
+    let closest = null;
+
+    let distance = Infinity;
+
+    for(const n of notes){
+
+        if(
+            n.lane !== laneIndex ||
+            n.hit
+        ){
+            continue;
+        }
+
+        const target =
+            board.clientHeight - 140;
+
+        const d =
+            Math.abs(
+                n.y - target
+            );
+
+        if(d < distance){
+
+            distance = d;
+
+            closest = n;
+
+        }
+
+    }
+
+    if(
+        !closest ||
+        distance > 75
+    ){
+
+        combo = 0;
+
+        damage(8);
+
+        showJudgement(
+            "MISS",
+            "#c44732"
+        );
+
+        updateStats();
+
+        return;
+    }
+
+    closest.hit = true;
+
+    if(closest.el){
+
+        closest.el.remove();
+
+    }
+
+    notes =
+        notes.filter(
+            n=>n !== closest
+        );
+
+
+    if(distance < 18){
+
+        score +=
+            100 + combo * 5;
+
+        combo++;
+
+        showJudgement(
+            "PERFECT!",
+            "#f1d17b"
+        );
+
+    }
+
+    else if(distance < 42){
+
+        score +=
+            50 + combo * 2;
+
+        combo++;
+
+        showJudgement(
+            "GOOD",
+            "#d6a35a"
+        );
+
+    }
+
+    else{
+
+        score += 20;
+
+        combo++;
+
+        showJudgement(
+            "OK",
+            "#a98b61"
+        );
+
+    }
+
+    if(combo > bestCombo){
+
+        bestCombo = combo;
+
+    }
+
+    if(
+        combo > 0 &&
+        combo % 10 === 0
+    ){
+
+        health =
+            Math.min(
+                100,
+                health + 5
+            );
+
+    }
+
+    updateStats();
+
+}
+
+
+/* =====================================================
+   MISS
+===================================================== */
+
+function miss(n){
+
+    if(n.hit){
+        return;
+    }
+
+    n.hit = true;
+
+    combo = 0;
+
+    damage(12);
+
+    showJudgement(
+        "MISS",
+        "#b63b2d"
+    );
+
+    updateStats();
+
+}
+
+
+/* =====================================================
+   DAMAGE
+===================================================== */
+
+function damage(amount){
+
+    health -= amount;
+
+    health =
+        Math.max(
+            0,
+            health
+        );
+
+    updateStats();
+
+    if(health <= 0){
+
+        failLevel();
+
+    }
+
+}
+
+
+/* =====================================================
+   JUDGEMENT
+===================================================== */
+
+function showJudgement(text,color){
+
+    judgement.textContent =
+        text;
+
+    judgement.style.color =
+        color;
+
+    judgement.classList.remove(
+        "show"
+    );
+
+    void judgement.offsetWidth;
+
+    judgement.classList.add(
+        "show"
+    );
+
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+function updateStats(){
+
+    scoreText.textContent =
+        score;
+
+    comboText.textContent =
+        combo;
+
+    healthBar.style.width =
+        health + "%";
+
+}
+
+
+/* =====================================================
+   COMPLETE
+===================================================== */
+
+function completeLevel(){
+
+    if(!running){
+        return;
+    }
+
+    running = false;
+
+    stopTimers();
+
+
+    /*
+       Unlock next level.
+    */
+
+    if(
+        currentLevel + 1 >= unlocked &&
+        currentLevel + 1 < levels.length
+    ){
+
+        unlocked =
+            currentLevel + 2;
+
+        localStorage.setItem(
+            "kingdomRhythmUnlocked",
+            unlocked
+        );
+
+    }
+
+
+    document
+    .getElementById("resultTitle")
+    .textContent =
+        "🏆 Level Complete!";
+
+    document
+    .getElementById("finalScore")
+    .textContent =
+        score;
+
+    document
+    .getElementById("finalCombo")
+    .textContent =
+        bestCombo;
+
+
+    const nextButton =
+        document.getElementById(
+            "nextLevelButton"
+        );
+
+
+    if(
+        currentLevel + 1 <
+        levels.length
+    ){
+
+        nextButton.textContent =
+            "Next Level";
+
+        nextButton.onclick = ()=>{
+
+            startLevel(
+                currentLevel + 1
+            );
+
+        };
+
+    }
+
+    else{
+
+        nextButton.textContent =
+            "🏆 Kingdom Complete!";
+
+        nextButton.onclick = ()=>{
+
+            showLevelSelect();
+
+        };
+
+    }
+
+
+    gameOver.style.display =
+        "flex";
+
+}
+
+
+/* =====================================================
+   FAIL
+===================================================== */
+
+function failLevel(){
+
+    if(!running){
+        return;
+    }
+
+    running = false;
+
+    stopTimers();
+
+
+    document
+    .getElementById("resultTitle")
+    .textContent =
+        "💀 The Rhythm Was Lost";
+
+    document
+    .getElementById("finalScore")
+    .textContent =
+        score;
+
+    document
+    .getElementById("finalCombo")
+    .textContent =
+        bestCombo;
+
+
+    const nextButton =
+        document.getElementById(
+            "nextLevelButton"
+        );
+
+
+    nextButton.textContent =
+        "Try Again";
+
+
+    nextButton.onclick = ()=>{
+
+        startLevel(
+            currentLevel
+        );
+
+    };
+
+
+    gameOver.style.display =
+        "flex";
+
+}
+
+
+/* =====================================================
+   LEVEL SELECT BUTTON
+===================================================== */
+
+document
+.getElementById("levelSelectButton")
+.addEventListener(
+    "click",
+    showLevelSelect
+);
+
+
+function showLevelSelect(){
+
+    running = false;
+
+    stopTimers();
+
+
+    notes.forEach(n=>{
+
+        if(n.el){
+
+            n.el.remove();
+
+        }
+
+    });
+
+    notes = [];
+
+
+    gameOver.style.display =
+        "none";
+
+    topBar.style.display =
+        "none";
+
+    board.style.display =
+        "none";
+
+    levelSelect.style.display =
+        "flex";
+
+
+    renderLevels();
+
+}
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+renderLevels();
+
+</script>
+
+</body>
+</html>
