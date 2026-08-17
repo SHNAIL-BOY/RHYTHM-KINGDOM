@@ -1256,36 +1256,33 @@ function startLevel(index){
 
     currentLevel = index;
 
-// Stop previous music
-if (music) {
-    music.pause();
-    music.currentTime = 0;
-}
-    
-music = new Audio(
-    new URL(
-        levels[index].music,
-        document.baseURI
-    ).href
-);
+    // Stop previous music
+    if (music) {
+        music.pause();
+        music.currentTime = 0;
+    }
+        
+    // Use standard relative path for simple resolution
+    music = new Audio(levels[index].music);
+    music.loop = true;
+    music.volume = 0.7;
 
-music.loop = true;
-music.volume = 0.7;
+    music.addEventListener("error", (e) => {
+        console.error(
+            "Could not load music file. Check path & casing:",
+            levels[index].music,
+            music.error
+        );
+    });
 
-music.addEventListener("error", () => {
-    console.error(
-        "Could not load music:",
-        levels[index].music,
-        music.error
-    );
-});
+    // Play music directly from the click user gesture
+    let playPromise = music.play();
 
-music.play().catch(error => {
-    console.log(
-        "Music could not start:",
-        error
-    );
-});
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.warn("Autoplay blocked or audio failed to load:", error);
+        });
+    }
 
     score = 0;
     combo = 0;
@@ -1321,7 +1318,6 @@ music.play().catch(error => {
         spawnChartNote,
         BEAT
     );
-
 }
 
 
