@@ -1131,6 +1131,7 @@ let combo = 0;
 let bestCombo = 0;
 let health = 100;
 let running = false;
+let music = null;
 
 let notes = [];
 
@@ -1249,6 +1250,22 @@ function startLevel(index){
     stopTimers();
 
     currentLevel = index;
+
+// Stop previous music
+if (music) {
+    music.pause();
+    music.currentTime = 0;
+}
+
+// Load this level's music
+music = new Audio(levels[index].music);
+music.loop = true;
+music.volume = 0.7;
+
+// Start music
+music.play().catch(error => {
+    console.log("Music needs user interaction:", error);
+});
 
     score = 0;
     combo = 0;
@@ -1754,6 +1771,10 @@ function completeLevel(){
 
     stopTimers();
 
+    if (music) {
+    music.pause();
+    music.currentTime = 0;
+}
 
     /*
        Unlock next level.
@@ -1890,6 +1911,11 @@ function failLevel(){
 
 }
 
+    if (music) {
+    music.pause();
+    music.currentTime = 0;
+}
+
 
 /* =====================================================
    LEVEL SELECT BUTTON
@@ -1904,6 +1930,12 @@ document
 
 
 function showLevelSelect(){
+
+if (music) {
+    music.pause();
+    music.currentTime = 0;
+    music = null;
+}
 
     running = false;
 
