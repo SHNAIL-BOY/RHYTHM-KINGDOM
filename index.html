@@ -942,11 +942,6 @@ button:hover{
 
 </div>
 
-<audio controls>
-    <source src="music/castle-gates.mp3" type="audio/mpeg">
-    Your browser does not support audio.
-</audio>
-
 <script>
 
 /* =====================================================
@@ -962,14 +957,43 @@ const levels = [
         music:"music/castle-gates.mp3",
 
         chart:[
-            0,1,2,3,
-            0,1,2,3,
-            0,2,1,3,
-            0,1,2,3,
-            0,0,1,1,
-            2,2,3,3,
-            0,1,2,3,
-            3,2,1,0
+            { time: 1000, lane: 0 },
+            { time: 1468, lane: 1 },
+            { time: 1937, lane: 2 },
+            { time: 2406, lane: 3 },
+            { time: 2875, lane: 2 },
+            { time: 3343, lane: 1 },
+            { time: 3812, lane: 0 },
+            { time: 4281, lane: 3 },
+            { time: 4750, lane: 0 },
+            { time: 4867, lane: 1 },
+            { time: 4984, lane: 2 },
+            { time: 5101, lane: 3 },
+            { time: 5687, lane: 0 },
+            { time: 6156, lane: 2 },
+            { time: 6625, lane: 1 },
+            { time: 7093, lane: 3 },
+            { time: 7562, lane: 0 },
+            { time: 8031, lane: 1 },
+            { time: 8500, lane: 2 },
+            { time: 8968, lane: 3 },
+            { time: 9437, lane: 1 },
+            { time: 9906, lane: 0 },
+            { time: 10375, lane: 2 },
+            { time: 10843, lane: 3 },
+            { time: 11312, lane: 1 },
+            { time: 11781, lane: 2 },
+            { time: 12250, lane: 0 },
+            { time: 12484, lane: 1 },
+            { time: 12718, lane: 2 },
+            { time: 12953, lane: 3 },
+            { time: 13187, lane: 2 },
+            { time: 13421, lane: 1 },
+            { time: 13656, lane: 0 },
+            { time: 14125, lane: 3 },
+            { time: 14593, lane: 2 },
+            { time: 15062, lane: 1 },
+            { time: 15531, lane: 0 }
         ]
     },
 
@@ -1150,9 +1174,47 @@ let chartPosition = 0;
    RHYTHM
 ===================================================== */
 
-const BPM = 120;
-const BEAT = 60000 / BPM;
+const NOTE_TRAVEL_TIME = 1200;
 
+function updateMusicChart(){
+
+    if(!running){
+        return;
+    }
+
+    const level = levels[currentLevel];
+
+    // Object array mode (Level 1 timestamp-based)
+    if(typeof level.chart[0] === "object"){
+        if(!music) return;
+        const songTime = music.currentTime * 1000;
+
+        while(
+            chartPosition < level.chart.length &&
+            level.chart[chartPosition].time <= songTime + NOTE_TRAVEL_TIME
+        ){
+            spawnNote(level.chart[chartPosition].lane);
+            chartPosition++;
+        }
+    }
+}
+
+function spawnChartNote(){
+    if(!running) return;
+
+    const level = levels[currentLevel];
+
+    // Number array mode (Levels 2-5 simple lane indices)
+    if(typeof level.chart[0] === "number"){
+        if(chartPosition < level.chart.length){
+            spawnNote(level.chart[chartPosition]);
+            chartPosition++;
+        } else {
+            stopTimers();
+            checkLevelFinished();
+        }
+    }
+}
 
 /* =====================================================
    LEVEL SELECT
@@ -1264,8 +1326,12 @@ function startLevel(index){
         
     // Use standard relative path for simple resolution
     music = new Audio(levels[index].music);
-    music.loop = true;
+    music.loop = false;
     music.volume = 0.7;
+
+    music.addEventListener("ended", () => {
+        checkLevelFinished();
+    });
 
     music.addEventListener("error", (e) => {
         console.error(
@@ -1312,12 +1378,11 @@ function startLevel(index){
 
     running = true;
 
-    spawnChartNote();
-
-    beatTimer = setInterval(
-        spawnChartNote,
-        BEAT
-    );
+    // Handles fallback spawn timer for levels 2-5
+    if (typeof levels[index].chart[0] === "number") {
+        spawnChartNote();
+        beatTimer = setInterval(spawnChartNote, 500);
+    }
 }
 
 
@@ -1350,41 +1415,11 @@ function stopTimers(){
    SPAWN
 ===================================================== */
 
-function spawnChartNote(){
+function spawnNote(laneIndex){
 
     if(!running){
         return;
     }
-
-    const level =
-        levels[currentLevel];
-
-    if(
-        chartPosition >=
-        level.chart.length
-    ){
-
-        if(beatTimer !== null){
-
-            clearInterval(beatTimer);
-
-            beatTimer = null;
-
-        }
-
-        finishTimer =
-            setTimeout(
-                checkLevelFinished,
-                5000
-            );
-
-        return;
-    }
-
-    const laneIndex =
-        level.chart[chartPosition];
-
-    chartPosition++;
 
     const note =
         document.createElement("div");
@@ -1450,6 +1485,8 @@ function loop(now){
     last = now;
 
     if(running){
+        
+        updateMusicChart();
 
         for(
             let i=notes.length-1;
