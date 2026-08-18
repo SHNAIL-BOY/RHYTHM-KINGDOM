@@ -2795,7 +2795,23 @@ if (
 unlocked = Math.min(
     unlocked,
     levels.length
-);
+)
+//('Shift + U')
+window.addEventListener('keydown', (e) => {
+    if (e.shiftKey && e.key.toLowerCase() === 'u') {
+        // Mark all level indices as unlocked in localStorage
+        const allUnlocked = levels.map((_, index) => index);
+        localStorage.setItem('rk_unlocked', JSON.stringify(allUnlocked));
+        
+        // Update local variable and refresh UI if function exists
+        unlocked = allUnlocked;
+        if (typeof renderLevels === 'function') {
+            renderLevels();
+        }
+        
+        alert('All levels unlocked!');
+    }
+});
 
 
 /* =====================================================
